@@ -1,0 +1,104 @@
+name: Scraper
+
+on:
+  schedule:
+    - cron: '0 */1 * * *'  # Ejecuta cada 6 horas
+  workflow_dispatch:  # Permite ejecución manual
+  push:
+    branches: [ main ]
+    paths:
+      - 'scraper.py'
+      - 'login/**'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    permissions:
+      contents: write  # Permite push al repositorio
+      actions: read    # Permite leer otros actions
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install playwright requests
+        playwright install chromium
+        playwright install-deps
+        
+    - name: Verificar archivos de login
+      run: |
+        echo "🔍 Verificando archivos de login..."
+        ls -la login/
+        if [ ! -f login/twitter_cookies.json ]; then
+          echo "❌ ERROR: No se encontró login/twitter_cookies.json"
+          exit 1
+        fi
+        if [ ! -f login/twitter_localstorage.json ]; then
+          echo "❌ ERROR: No se encontró login/twitter_localstorage.json"
+          exit 1
+        fi
+        echo "✅ Archivos de login verificados"
+        
+    - name: Configurar permisos para Chromium
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgbm-dev libxshmfence-dev
+        
+    - name: Ejecutar scraper
+      run: |
+        echo "🚀 Ejecutando scraper en modo headless..."
+        python scraper.py
+      env:
+        DISPLAY: ":99"
+        
+    - name: Verificar cambios en tuits
+      run: |
+        if [ -d "tuits/" ] && [ "$(ls -A tuits/)" ]; then
+          echo "hay_cambios=true" >> $GITHUB_ENV
+          echo "✅ Hay nuevos datos en la carpeta tuits/"
+        else
+          echo "hay_cambios=false" >> $GITHUB_ENV
+          echo "ℹ️  No hay datos nuevos en la carpeta tuits/"
+        fi
+
+    - name: Configurar git para commits
+      if: env.hay_cambios == 'true'
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+    - name: Subir resultados como artefacto
+      if: env.hay_cambios == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: tuits-${{ github.run_id }}-${{ github.run_attempt }}
+        path: tuits/
+        retention-days: 7
+
+    - name: Commit y push de datos actualizados
+      if: env.hay_cambios == 'true'
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        git add tuits/
+        if ! git diff --cached --quiet; then
+          git commit -m "🐦 Actualizar datos de tweets scrapeados - $(date +'%Y-%m-%d %H:%M')"
+          git push
+        fi
+
+    - name: Limpiar credenciales (IMPORTANTE)
+      if: always()  # Se ejecuta incluso si fallan otros pasos
+      run: |
+        echo "🧹 Eliminando archivos sensibles..."
+        rm -f login/*.json login/*.png 2>/dev/null || true
+        echo "✅ Limpieza completada"

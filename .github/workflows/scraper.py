@@ -1,13 +1,13 @@
-name: Twitter Scraper (SIN SECRETS - INSEGURO)
+name: Scraper
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Ejecuta cada 6 horas
+    - cron: '0 */1 * * *'  # Ejecuta cada 6 horas
   workflow_dispatch:  # Permite ejecución manual
   push:
     branches: [ main ]
     paths:
-      - '2do_plano.py'
+      - 'scraper.py'
       - 'login/**'
 
 jobs:

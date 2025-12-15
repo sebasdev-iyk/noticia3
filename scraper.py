@@ -2,29 +2,34 @@ import os
 import json
 import time
 import requests
+import shutil  # <--- AGREGA ESTO
 from datetime import datetime
 from urllib.parse import quote
 from playwright.sync_api import sync_playwright
 
 
-if 'GITHUB_ACTIONS' in os.environ:
-    print("⚙️ Detectado entorno GitHub Actions")
-    # Reducir la carga para evitar bloqueos
-    MAX_TRENDS = 50  # Solo 1 tendencia en CI
-    MAX_TWEETS = 60  # Menos tweets por tendencia
-    MAX_REPLIES_PER_TWEET = 10  # Menos respuestas por tweet
-    print(f"🐢 Modo CI: {MAX_TRENDS} tendencias, {MAX_TWEETS} tweets, {MAX_REPLIES_PER_TWEET} respuestas por tweet")
-else:
-    MAX_TRENDS = 50
-    MAX_TWEETS = 60
-    MAX_REPLIES_PER_TWEET = 10
+# Configuración de límites
+MAX_TRENDS = 2
+MAX_TWEETS = 2
+MAX_REPLIES_PER_TWEET = 5
 
 
 # Configuración de directorios
 LOGIN_DIR = "login"
 OUTPUT_DIR = "tuits"
+
+# --- INICIO DEL CAMBIO ---
+if os.path.exists(OUTPUT_DIR):
+    try:
+        shutil.rmtree(OUTPUT_DIR)  # Esto borra la carpeta y todo lo de adentro
+        print(f"🧹 Carpeta '{OUTPUT_DIR}' eliminada. Iniciando limpieza...")
+        time.sleep(1) # Una pequeña pausa para asegurar que el sistema libere la carpeta
+    except OSError as e:
+        print(f"⚠️ No se pudo borrar la carpeta antigua: {e}")
+# --- FIN DEL CAMBIO ---
+
 IMAGES_DIR = os.path.join(OUTPUT_DIR, "images")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True) # Aquí se crea de nuevo, totalmente vacía
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
 def load_session(context):

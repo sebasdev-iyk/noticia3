@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Doom Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background-color: #1a2b3c;
+            color: white;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+        
+        #crosshair::before, #crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        #crosshair::before {
+            width: 24px;
+            height: 2px;
+            top: 11px;
+            left: 0;
+        }
+        
+        #crosshair::after {
+            width: 2px;
+            height: 24px;
+            top: 0;
+            left: 11px;
+        }
+        
+        #hud {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid #4ecdc4;
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+        
+        #ammo {
+            color: #a8dadc;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #4ecdc4 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        #loadingScreen h1 {
+            font-size: 4em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.7);
+            color: white;
+            letter-spacing: 2px;
+        }
+        
+        #loadingBar {
+            width: 400px;
+            height: 25px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 50px;
+            border: 2px solid #4ecdc4;
+        }
+        
+        #loadingProgress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #4cc9f0);
+            transition: width 0.3s ease;
+            border-radius: 13px;
+        }
+        
+        #startButton {
+            background: linear-gradient(45deg, #4ecdc4, #4cc9f0);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.4em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(78, 205, 196, 0.7);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        #startButton:hover {
+            background: linear-gradient(45deg, #45b8b0, #45b8e6);
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(78, 205, 196, 0.9);
+        }
+        
+        #startButton:active {
+            transform: scale(0.98);
+        }
+        
+        .notification {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #4ecdc4;
+            padding: 12px 25px;
+            border-radius: 8px;
+            border-left: 4px solid #4ecdc4;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 200;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .bullet-hole {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #2a4a65;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 50;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+        
+        .instructions {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #4ecdc4;
+            font-size: 1em;
+            color: #a8dadc;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .debug-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #4ecdc4;
+            z-index: 100;
+        }
+        
+        .collision-debug {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #ff9e80;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingScreen">
+        <h1>NEON DOOM</h1>
+        <div id="loadingBar">
+            <div id="loadingProgress"></div>
+        </div>
+        <button id="startButton">INICIAR JUEGO</button>
+    </div>
+    
+    <div id="gameContainer">
+        <div id="crosshair"></div>
+        <div id="hud">
+            <div id="ammo">MUNICIÓN: ∞</div>
+        </div>
+        <div class="instructions">WASD: MOVERSE | MOUSE: MIRAR | CLICK: DISPARAR | ESPACIO: SALTAR</div>
+        <div class="notification" id="notification"></div>
+        <div class="debug-info" id="debugInfo"></div>
+        <div class="collision-debug" id="collisionDebug"></div>
+    </div>
+
+    <!-- Cargar Three.js y controles desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.min.js"></script>
+
+    <script>
+        // Variables globales
+        let scene, camera, renderer, controls;
+        let moveForward = false;
+        let moveBackward = false;
+        let moveLeft = false;
+        let moveRight = false;
+        let canJump = false;
+        let prevTime = performance.now();
+        const velocity = new THREE.Vector3();
+        const direction = new THREE.Vector3();
+        let raycaster;
+        let walls = [];
+        let bullets = [];
+        let bulletHoles = [];
+        let maxBulletHoles = 100;
+        
+        // Estado del jugador
+        const playerState = {
+            ammo: Infinity
+        };
+        
+        // Configuración del juego
+        const config = {
+            gravity: 30,
+            playerSpeed: 500,
+            jumpForce: 12,
+            shootCooldown: 150,
+            lastShotTime: 0,
+            friction: 0.88,
+            acceleration: 3.5,
+            maxBullets: 30,
+            bulletLifetime: 2000,
+            bulletSpeed: 120,
+            playerRadius: 4,  // Radio del jugador para colisiones
+            playerHeight: 20,  // Altura del jugador para colisiones
+            collisionPrecision: 0.1, // Precisión de colisión
+            wallFriction: 0.8, // Fricción al deslizar contra paredes
+            diagonalWallCorrection: 0.7 // Factor de corrección para paredes diagonales
+        };
+        
+        // Elementos del DOM
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingProgress = document.getElementById('loadingProgress');
+        const startButton = document.getElementById('startButton');
+        const notification = document.getElementById('notification');
+        const debugInfo = document.getElementById('debugInfo');
+        const collisionDebug = document.getElementById('collisionDebug');
+        
+        // Inicializar la carga
+        let loadingStep = 0;
+        const totalSteps = 4;
+        
+        function updateLoadingProgress() {
+            loadingStep++;
+            const progress = Math.min(100, (loadingStep / totalSteps) * 100);
+            loadingProgress.style.width = progress + '%';
+            
+            if (loadingStep >= totalSteps) {
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        showNotification('¡Haz clic en la pantalla para comenzar a jugar!');
+                    }, 500);
+                }, 500);
+            }
+        }
+        
+        // Iniciar la carga cuando se hace clic
+        startButton.addEventListener('click', () => {
+            const steps = [
+                () => { console.log('Cargando Three.js...'); updateLoadingProgress(); },
+                () => { console.log('Cargando controles...'); updateLoadingProgress(); },
+                () => { console.log('Cargando escena...'); updateLoadingProgress(); },
+                () => { console.log('Preparando juego...'); updateLoadingProgress(); }
+            ];
+            
+            steps.forEach((step, index) => {
+                setTimeout(step, index * 250);
+            });
+            
+            startButton.disabled = true;
+        });
+        
+        function initGame() {
+            // Crear la escena
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB); // Cielo azul claro
+            scene.fog = new THREE.Fog(0x87CEEB, 0, 300);
+            
+            // Crear la cámara
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.y = 10;
+            
+            // Crear el renderizador
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('gameContainer').appendChild(renderer.domElement);
+            
+            // Añadir controles de primer persona - SISTEMA DE MOVIMIENTO ESTÁNDAR
+            controls = new THREE.PointerLockControls(camera, document.body);
+            scene.add(controls.getObject());
+            
+            // Evento para cuando se activa el bloqueo del puntero
+            controls.addEventListener('lock', () => {
+                document.getElementById('crosshair').style.display = 'block';
+                showNotification('¡Listo para explorar! Usa WASD para moverte y el mouse para mirar.');
+            });
+            
+            // Evento para cuando se pierde el bloqueo del puntero
+            controls.addEventListener('unlock', () => {
+                document.getElementById('crosshair').style.display = 'none';
+            });
+            
+            // Añadir evento de click para iniciar el juego
+            document.addEventListener('click', () => {
+                if (!controls.isLocked) {
+                    controls.lock();
+                }
+            }, { once: true });
+            
+            // Configurar raycaster para disparos
+            raycaster = new THREE.Raycaster();
+            raycaster.far = 100;
+            
+            // Crear el suelo
+            createGround();
+            
+            // Crear las paredes del laberinto
+            createMaze();
+            
+            // Añadir luces
+            addLighting();
+            
+            // Añadir eventos de teclado y mouse
+            addEventListeners();
+            
+            // Iniciar el bucle de animación
+            animate();
+        }
+        
+        function createGround() {
+            // Reducir el tamaño del terreno para que coincida con el laberinto
+            const groundGeometry = new THREE.PlaneGeometry(300, 300, 50, 50);
+            const groundMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x8FBC8F,
+                roughness: 0.8,
+                metalness: 0.2,
+                wireframe: false
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = 0; // Ajustar para que esté en 0
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Añadir líneas de cuadrícula
+            const gridHelper = new THREE.GridHelper(300, 30, 0x444444, 0x666666);
+            gridHelper.position.y = 0.1;
+            scene.add(gridHelper);
+        }
+        
+        function createMaze() {
+            const wallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x4a6fa5,
+                roughness: 0.7,
+                metalness: 0.3,
+                emissive: 0x2a4a65,
+                emissiveIntensity: 0.1
+            });
+            
+            // Nuevo diseño de laberinto más coherente y completo
+            const wallConfigurations = [
+                // Paredes exteriores (ajustadas al tamaño del terreno)
+                { pos: [0, 10, 140], size: [280, 20, 10] },    // frente
+                { pos: [0, 10, -140], size: [280, 20, 10] },   // atrás
+                { pos: [140, 10, 0], size: [10, 20, 280] },    // derecha
+                { pos: [-140, 10, 0], size: [10, 20, 280] },   // izquierda
+                
+                // Laberinto interior más complejo
+                // Pasillo central
+                { pos: [0, 10, 100], size: [80, 20, 10] },
+                { pos: [0, 10, -100], size: [80, 20, 10] },
+                { pos: [50, 10, 0], size: [10, 20, 80] },
+                { pos: [-50, 10, 0], size: [10, 20, 80] },
+                
+                // Cuartos y pasillos
+                { pos: [100, 10, 80], size: [10, 20, 40] },
+                { pos: [100, 10, -80], size: [10, 20, 40] },
+                { pos: [-100, 10, 80], size: [10, 20, 40] },
+                { pos: [-100, 10, -80], size: [10, 20, 40] },
+                
+                { pos: [80, 10, 100], size: [40, 20, 10] },
+                { pos: [-80, 10, 100], size: [40, 20, 10] },
+                { pos: [80, 10, -100], size: [40, 20, 10] },
+                { pos: [-80, 10, -100], size: [40, 20, 10] },
+                
+                // Paredes diagonales para crear rutas interesantes
+                { pos: [60, 10, 60], size: [10, 20, 60], rotation: Math.PI/4 },
+                { pos: [-60, 10, -60], size: [10, 20, 60], rotation: Math.PI/4 },
+                { pos: [60, 10, -60], size: [10, 20, 60], rotation: -Math.PI/4 },
+                { pos: [-60, 10, 60], size: [10, 20, 60], rotation: -Math.PI/4 },
+                
+                // Separadores adicionales
+                { pos: [20, 10, 60], size: [10, 20, 40] },
+                { pos: [-20, 10, -60], size: [10, 20, 40] },
+                { pos: [40, 10, -40], size: [40, 20, 10] },
+                { pos: [-40, 10, 40], size: [40, 20, 10] },
+                
+                // Torres o estructuras altas
+                { pos: [120, 15, 120], size: [15, 30, 15] },
+                { pos: [-120, 15, 120], size: [15, 30, 15] },
+                { pos: [120, 15, -120], size: [15, 30, 15] },
+                { pos: [-120, 15, -120], size: [15, 30, 15] }
+            ];
+            
+            wallConfigurations.forEach(wall => {
+                const geometry = new THREE.BoxGeometry(wall.size[0], wall.size[1], wall.size[2]);
+                const mesh = new THREE.Mesh(geometry, wallMaterial);
+                mesh.position.set(wall.pos[0], wall.pos[1], wall.pos[2]);
+                
+                // Aplicar rotación si está definida
+                if (wall.rotation) {
+                    mesh.rotation.y = wall.rotation;
+                }
+                
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                
+                // Añadir información de colisión más detallada
+                mesh.userData = {
+                    type: 'wall',
+                    boundingBox: new THREE.Box3().setFromObject(mesh),
+                    boundingSphere: new THREE.Sphere(
+                        new THREE.Vector3(wall.pos[0], wall.pos[1], wall.pos[2]),
+                        Math.max(wall.size[0], wall.size[1], wall.size[2]) / 2
+                    ),
+                    // Información adicional para colisiones mejoradas
+                    size: new THREE.Vector3(wall.size[0], wall.size[1], wall.size[2]),
+                    position: new THREE.Vector3(wall.pos[0], wall.pos[1], wall.pos[2]),
+                    rotation: wall.rotation || 0,
+                    isDiagonal: wall.rotation !== 0 && wall.rotation !== undefined
+                };
+                
+                scene.add(mesh);
+                walls.push(mesh);
+            });
+            
+            // Añadir cajas y obstáculos
+            addObstacles();
+            
+            // Añadir columnas decorativas
+            addColumns();
+        }
+        
+        function addObstacles() {
+            // Materiales en colores azules y verdes
+            const boxMaterials = [
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x3a5a75, 
+                    roughness: 0.7,
+                    metalness: 0.4,
+                    emissive: 0x1a3a55,
+                    emissiveIntensity: 0.1
+                }),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x5a7a55,
+                    roughness: 0.7,
+                    metalness: 0.3,
+                    emissive: 0x3a5a35,
+                    emissiveIntensity: 0.1
+                })
+            ];
+            
+            const boxPositions = [
+                // Cajas en posiciones estratégicas del laberinto
+                { x: 30, y: 5, z: 30, material: 0, size: [10, 10, 10] },
+                { x: -30, y: 5, z: 30, material: 1, size: [10, 10, 10] },
+                { x: 30, y: 5, z: -30, material: 0, size: [10, 10, 10] },
+                { x: -30, y: 5, z: -30, material: 1, size: [10, 10, 10] },
+                
+                // Cajas más grandes en áreas abiertas
+                { x: 80, y: 10, z: 0, material: 0, size: [15, 20, 15] },
+                { x: -80, y: 10, z: 0, material: 1, size: [15, 20, 15] },
+                { x: 0, y: 10, z: 80, material: 0, size: [15, 20, 15] },
+                { x: 0, y: 10, z: -80, material: 1, size: [15, 20, 15] },
+                
+                // Pilas de cajas
+                { x: 110, y: 5, z: 40, material: 0, size: [8, 10, 8] },
+                { x: 110, y: 15, z: 40, material: 1, size: [6, 10, 6] },
+                { x: -110, y: 5, z: -40, material: 0, size: [8, 10, 8] },
+                { x: -110, y: 15, z: -40, material: 1, size: [6, 10, 6] }
+            ];
+            
+            boxPositions.forEach(pos => {
+                const geometry = new THREE.BoxGeometry(pos.size[0], pos.size[1], pos.size[2]);
+                const mesh = new THREE.Mesh(geometry, boxMaterials[pos.material]);
+                mesh.position.set(pos.x, pos.y, pos.z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                
+                // Añadir información de colisión
+                mesh.userData = {
+                    type: 'wall',
+                    boundingBox: new THREE.Box3().setFromObject(mesh),
+                    boundingSphere: new THREE.Sphere(
+                        new THREE.Vector3(pos.x, pos.y, pos.z),
+                        Math.max(pos.size[0], pos.size[1], pos.size[2]) / 2
+                    ),
+                    size: new THREE.Vector3(pos.size[0], pos.size[1], pos.size[2]),
+                    position: new THREE.Vector3(pos.x, pos.y, pos.z),
+                    isDiagonal: false
+                };
+                
+                scene.add(mesh);
+                walls.push(mesh);
+            });
+        }
+        
+        function addColumns() {
+            const columnMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x6a8fa5,
+                roughness: 0.6,
+                metalness: 0.4
+            });
+            
+            const columnPositions = [
+                { x: 100, z: 100 },
+                { x: -100, z: 100 },
+                { x: 100, z: -100 },
+                { x: -100, z: -100 },
+                { x: 0, z: 120 },
+                { x: 0, z: -120 },
+                { x: 120, z: 0 },
+                { x: -120, z: 0 }
+            ];
+            
+            columnPositions.forEach(pos => {
+                const geometry = new THREE.CylinderGeometry(3, 3, 25, 8);
+                const mesh = new THREE.Mesh(geometry, columnMaterial);
+                mesh.position.set(pos.x, 12.5, pos.z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                
+                // Añadir información de colisión
+                mesh.userData = {
+                    type: 'wall',
+                    boundingBox: new THREE.Box3().setFromObject(mesh),
+                    boundingSphere: new THREE.Sphere(
+                        new THREE.Vector3(pos.x, 12.5, pos.z),
+                        5
+                    ),
+                    size: new THREE.Vector3(6, 25, 6),
+                    position: new THREE.Vector3(pos.x, 12.5, pos.z),
+                    isDiagonal: false
+                };
+                
+                scene.add(mesh);
+                walls.push(mesh);
+            });
+        }
+        
+        function addLighting() {
+            // Luz ambiental suave
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            // Luz direccional principal (simulando sol)
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(100, 150, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 1024;
+            directionalLight.shadow.mapSize.height = 1024;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 500;
+            directionalLight.shadow.camera.left = -200;
+            directionalLight.shadow.camera.right = 200;
+            directionalLight.shadow.camera.top = 200;
+            directionalLight.shadow.camera.bottom = -200;
+            scene.add(directionalLight);
+            
+            // Luces puntuales para áreas específicas
+            const pointLight1 = new THREE.PointLight(0x4ecdc4, 0.7, 100);
+            pointLight1.position.set(0, 20, 0);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0x4cc9f0, 0.5, 80);
+            pointLight2.position.set(80, 15, 80);
+            scene.add(pointLight2);
+            
+            const pointLight3 = new THREE.PointLight(0xa8dadc, 0.5, 80);
+            pointLight3.position.set(-80, 15, -80);
+            scene.add(pointLight3);
+            
+            // Luces adicionales para las torres
+            const pointLight4 = new THREE.PointLight(0xff9e80, 0.6, 60);
+            pointLight4.position.set(120, 25, 120);
+            scene.add(pointLight4);
+            
+            const pointLight5 = new THREE.PointLight(0xff9e80, 0.6, 60);
+            pointLight5.position.set(-120, 25, 120);
+            scene.add(pointLight5);
+        }
+        
+        function addEventListeners() {
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            document.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function onKeyDown(event) {
+            if (!controls.isLocked) return;
+            
+            switch (event.code) {
+                case 'KeyW':
+                case 'ArrowUp':
+                    moveForward = true;
+                    break;
+                case 'KeyA':
+                case 'ArrowLeft':
+                    moveLeft = true;
+                    break;
+                case 'KeyS':
+                case 'ArrowDown':
+                    moveBackward = true;
+                    break;
+                case 'KeyD':
+                case 'ArrowRight':
+                    moveRight = true;
+                    break;
+                case 'Space':
+                    if (canJump) {
+                        velocity.y = config.jumpForce;
+                        canJump = false;
+                        showNotification('¡Salto!');
+                    }
+                    break;
+            }
+        }
+        
+        function onKeyUp(event) {
+            switch (event.code) {
+                case 'KeyW':
+                case 'ArrowUp':
+                    moveForward = false;
+                    break;
+                case 'KeyA':
+                case 'ArrowLeft':
+                    moveLeft = false;
+                    break;
+                case 'KeyS':
+                case 'ArrowDown':
+                    moveBackward = false;
+                    break;
+                case 'KeyD':
+                case 'ArrowRight':
+                    moveRight = false;
+                    break;
+            }
+        }
+        
+        function onMouseDown(event) {
+            if (!controls.isLocked) return;
+            
+            if (event.button === 0) { // Botón izquierdo
+                shoot();
+            }
+        }
+        
+        function shoot() {
+            const currentTime = Date.now();
+            if (currentTime - config.lastShotTime < config.shootCooldown) return;
+            
+            config.lastShotTime = currentTime;
+            
+            // Crear bala visible
+            createBullet();
+            
+            // Rayo para detectar impactos
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const intersects = raycaster.intersectObjects(walls);
+            
+            if (intersects.length > 0 && intersects[0].distance <= 100) {
+                createBulletHole(intersects[0].point, intersects[0].face.normal);
+                showNotification('¡Impacto!');
+            }
+        }
+        
+        function createBullet() {
+            if (bullets.length >= config.maxBullets) return;
+            
+            // Material de la bala - AZUL ELECTRICO
+            const bulletMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x4cc9f0,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            const bulletGeometry = new THREE.SphereGeometry(1, 8, 8);
+            const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+            
+            // Posicionar la bala en la cámara
+            bullet.position.copy(camera.position);
+            
+            // Dirección de la bala
+            const bulletDirection = new THREE.Vector3();
+            camera.getWorldDirection(bulletDirection);
+            
+            bullet.userData = {
+                direction: bulletDirection,
+                speed: config.bulletSpeed,
+                lifetime: 0,
+                maxLifetime: config.bulletLifetime,
+                createdAt: Date.now(),
+                boundingSphere: new THREE.Sphere(bullet.position, 1)
+            };
+            
+            scene.add(bullet);
+            bullets.push(bullet);
+        }
+        
+        function createBulletHole(position, normal) {
+            const bulletHole = document.createElement('div');
+            bulletHole.className = 'bullet-hole';
+            
+            const vector = position.clone().project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+            
+            bulletHole.style.left = x + 'px';
+            bulletHole.style.top = y + 'px';
+            document.getElementById('gameContainer').appendChild(bulletHole);
+            
+            bulletHoles.push({
+                element: bulletHole,
+                time: Date.now()
+            });
+            
+            if (bulletHoles.length > maxBulletHoles) {
+                const oldHole = bulletHoles.shift();
+                if (oldHole.element.parentNode) {
+                    oldHole.element.parentNode.removeChild(oldHole.element);
+                }
+            }
+            
+            setTimeout(() => {
+                if (bulletHole.parentNode) {
+                    bulletHole.parentNode.removeChild(bulletHole);
+                }
+            }, 8000);
+        }
+        
+        function updateBullets(delta) {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                const bulletData = bullet.userData;
+                
+                // Mover la bala
+                bullet.position.add(bulletData.direction.clone().multiplyScalar(bulletData.speed * delta));
+                
+                // Actualizar esfera de colisión de la bala
+                bulletData.boundingSphere.center.copy(bullet.position);
+                
+                // Rotar la bala para que mire en dirección de movimiento
+                bullet.lookAt(bullet.position.clone().add(bulletData.direction));
+                
+                // Verificar colisiones de balas con paredes
+                if (checkBulletCollisions(bullet)) {
+                    scene.remove(bullet);
+                    bullets.splice(i, 1);
+                    continue;
+                }
+                
+                // Actualizar tiempo de vida
+                bulletData.lifetime += delta * 1000;
+                
+                // Eliminar bala si excede tiempo de vida o distancia
+                if (bulletData.lifetime > bulletData.maxLifetime || 
+                    bullet.position.distanceTo(camera.position) > 200) {
+                    scene.remove(bullet);
+                    bullets.splice(i, 1);
+                }
+            }
+        }
+        
+        function checkBulletCollisions(bullet) {
+            const bulletSphere = bullet.userData.boundingSphere;
+            
+            for (const wall of walls) {
+                const wallSphere = wall.userData.boundingSphere;
+                
+                // Detección rápida con esferas
+                if (bulletSphere.intersectsSphere(wallSphere)) {
+                    // Detección más precisa con cajas delimitadoras
+                    const wallBox = wall.userData.boundingBox;
+                    const bulletBox = new THREE.Box3().setFromCenterAndSize(
+                        bullet.position,
+                        new THREE.Vector3(2, 2, 2)
+                    );
+                    
+                    if (bulletBox.intersectsBox(wallBox)) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.opacity = '1';
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+            }, 2000);
+        }
+        
+        // SISTEMA DE COLISIONES MEJORADO PARA PAREDES DIAGONALES
+        function checkWallCollisions() {
+            const playerPos = controls.getObject().position;
+            const playerBox = new THREE.Box3().setFromCenterAndSize(
+                playerPos,
+                new THREE.Vector3(
+                    config.playerRadius * 2,
+                    config.playerHeight,
+                    config.playerRadius * 2
+                )
+            );
+            
+            let collisionCount = 0;
+            let collisionDetails = "";
+            
+            // Primera pasada: detección rápida con esferas
+            const potentialCollisions = [];
+            for (const wall of walls) {
+                const wallSphere = wall.userData.boundingSphere;
+                
+                // Esfera del jugador para detección rápida
+                const playerSphere = new THREE.Sphere(playerPos, config.playerRadius);
+                
+                if (playerSphere.intersectsSphere(wallSphere)) {
+                    potentialCollisions.push(wall);
+                }
+            }
+            
+            // Segunda pasada: detección precisa con cajas delimitadoras
+            for (const wall of potentialCollisions) {
+                const wallBox = wall.userData.boundingBox;
+                
+                if (playerBox.intersectsBox(wallBox)) {
+                    collisionCount++;
+                    
+                    // Resolver colisión según el tipo de pared
+                    let resolved = false;
+                    if (wall.userData.isDiagonal) {
+                        resolved = resolveDiagonalCollision(playerPos, wall);
+                        collisionDetails += `Diagonal<br>`;
+                    } else {
+                        resolved = resolveStandardCollision(playerPos, wall);
+                        collisionDetails += `Estándar<br>`;
+                    }
+                }
+            }
+            
+            // Actualizar información de depuración de colisiones
+            updateCollisionDebugInfo(collisionCount, collisionDetails);
+        }
+        
+        function resolveStandardCollision(playerPos, wall) {
+            const wallBox = wall.userData.boundingBox;
+            const wallSize = wall.userData.size;
+            const wallPos = wall.userData.position;
+            
+            // Crear caja del jugador
+            const playerBox = new THREE.Box3().setFromCenterAndSize(
+                playerPos,
+                new THREE.Vector3(
+                    config.playerRadius * 2,
+                    config.playerHeight,
+                    config.playerRadius * 2
+                )
+            );
+            
+            // Calcular la superposición en cada eje
+            const overlapX = Math.min(playerBox.max.x, wallBox.max.x) - Math.max(playerBox.min.x, wallBox.min.x);
+            const overlapZ = Math.min(playerBox.max.z, wallBox.max.z) - Math.max(playerBox.min.z, wallBox.min.z);
+            
+            // Si no hay superposición, no hay colisión
+            if (overlapX <= 0 || overlapZ <= 0) return false;
+            
+            // Determinar el eje de menor superposición para la resolución
+            if (overlapX < overlapZ) {
+                // Resolver en el eje X
+                if (playerPos.x < wallPos.x) {
+                    playerPos.x = wallBox.min.x - config.playerRadius;
+                } else {
+                    playerPos.x = wallBox.max.x + config.playerRadius;
+                }
+                // Aplicar fricción de pared y detener movimiento en X
+                velocity.x *= config.wallFriction;
+            } else {
+                // Resolver en el eje Z
+                if (playerPos.z < wallPos.z) {
+                    playerPos.z = wallBox.min.z - config.playerRadius;
+                } else {
+                    playerPos.z = wallBox.max.z + config.playerRadius;
+                }
+                // Aplicar fricción de pared y detener movimiento en Z
+                velocity.z *= config.wallFriction;
+            }
+            
+            return true;
+        }
+        
+        function resolveDiagonalCollision(playerPos, wall) {
+            const wallBox = wall.userData.boundingBox;
+            const wallPos = wall.userData.position;
+            const wallRotation = wall.userData.rotation;
+            
+            // Para paredes diagonales, usamos un enfoque diferente
+            // Calculamos la distancia del jugador a la línea central de la pared diagonal
+            
+            // Obtener los puntos de la línea central de la pared
+            const halfLength = wall.userData.size.z / 2;
+            const halfWidth = wall.userData.size.x / 2;
+            
+            // Calcular los puntos extremos de la pared en su sistema local
+            const localStart = new THREE.Vector3(0, 0, -halfLength);
+            const localEnd = new THREE.Vector3(0, 0, halfLength);
+            
+            // Rotar los puntos según la orientación de la pared
+            const rotationMatrix = new THREE.Matrix4().makeRotationY(wallRotation);
+            localStart.applyMatrix4(rotationMatrix);
+            localEnd.applyMatrix4(rotationMatrix);
+            
+            // Convertir a coordenadas mundiales
+            const worldStart = localStart.clone().add(wallPos);
+            const worldEnd = localEnd.clone().add(wallPos);
+            
+            // Calcular la distancia del jugador al segmento de línea
+            const distance = pointToLineDistance(playerPos, worldStart, worldEnd);
+            
+            // Si el jugador está lo suficientemente cerca de la línea
+            if (distance < config.playerRadius + halfWidth) {
+                // Calcular el vector normal a la pared
+                const wallDir = new THREE.Vector3().subVectors(worldEnd, worldStart).normalize();
+                const wallNormal = new THREE.Vector3(-wallDir.z, 0, wallDir.x);
+                
+                // Determinar en qué lado de la pared está el jugador
+                const toPlayer = new THREE.Vector3().subVectors(playerPos, worldStart);
+                const side = toPlayer.dot(wallNormal);
+                
+                // Mover al jugador a la distancia correcta de la pared
+                const correctionDistance = config.playerRadius + halfWidth - distance;
+                if (side > 0) {
+                    playerPos.add(wallNormal.clone().multiplyScalar(correctionDistance * config.diagonalWallCorrection));
+                } else {
+                    playerPos.sub(wallNormal.clone().multiplyScalar(correctionDistance * config.diagonalWallCorrection));
+                }
+                
+                // Ajustar la velocidad para que sea más fluido contra diagonales
+                const velDot = velocity.dot(wallNormal);
+                velocity.sub(wallNormal.clone().multiplyScalar(velDot * 0.7));
+                
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Función auxiliar para calcular distancia de un punto a un segmento de línea
+        function pointToLineDistance(point, lineStart, lineEnd) {
+            const lineVec = new THREE.Vector3().subVectors(lineEnd, lineStart);
+            const pointVec = new THREE.Vector3().subVectors(point, lineStart);
+            
+            const lineLength = lineVec.length();
+            const lineDir = lineVec.clone().normalize();
+            
+            // Proyección del punto sobre la línea
+            const t = pointVec.dot(lineDir) / lineLength;
+            
+            // Si la proyección está fuera del segmento, calcular distancia al punto más cercano
+            if (t < 0) {
+                return point.distanceTo(lineStart);
+            } else if (t > 1) {
+                return point.distanceTo(lineEnd);
+            }
+            
+            // Punto más cercano en el segmento
+            const closestPoint = lineStart.clone().add(lineDir.clone().multiplyScalar(t * lineLength));
+            
+            return point.distanceTo(closestPoint);
+        }
+        
+        function updateCollisionDebugInfo(collisionCount, details) {
+            collisionDebug.textContent = `Colisiones: ${collisionCount}`;
+            if (details) {
+                collisionDebug.innerHTML += `<br>${details}`;
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (controls.isLocked) {
+                const time = performance.now();
+                const delta = (time - prevTime) / 1000;
+                
+                // Mover el jugador usando el método estándar de PointerLockControls
+                velocity.x -= velocity.x * 10.0 * delta;
+                velocity.z -= velocity.z * 10.0 * delta;
+                velocity.y -= config.gravity * delta;
+                
+                direction.z = Number(moveForward) - Number(moveBackward);
+                direction.x = Number(moveRight) - Number(moveLeft);
+                direction.normalize();
+                
+                if (moveForward || moveBackward) velocity.z -= direction.z * config.playerSpeed * delta;
+                if (moveLeft || moveRight) velocity.x -= direction.x * config.playerSpeed * delta;
+                
+                // Aplicar movimiento usando los métodos estándar de PointerLockControls
+                if (moveForward || moveBackward || moveLeft || moveRight) {
+                    controls.moveRight(-velocity.x * delta);
+                    controls.moveForward(-velocity.z * delta);
+                }
+                
+                // Aplicar gravedad
+                controls.getObject().position.y += velocity.y * delta;
+                
+                // Colisión con el suelo
+                if (controls.getObject().position.y < 10) {
+                    controls.getObject().position.y = 10;
+                    velocity.y = 0;
+                    canJump = true;
+                }
+                
+                // Verificar colisión con paredes (SISTEMA MEJORADO)
+                checkWallCollisions();
+                
+                // Actualizar balas
+                updateBullets(delta);
+                
+                // Actualizar información de depuración
+                updateDebugInfo();
+                
+                prevTime = time;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        function updateDebugInfo() {
+            const playerPos = controls.getObject().position;
+            debugInfo.textContent = `Posición: X:${playerPos.x.toFixed(1)}, Y:${playerPos.y.toFixed(1)}, Z:${playerPos.z.toFixed(1)}`;
+        }
+        
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>

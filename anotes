@@ -1,0 +1,40 @@
+cosas que se mantienen el el 
+cnabiar a csv
+
+enfocado a la tendencia :
+ - tipo(tendencia o respuesta)
+ - (si es repuesta) 
+ - tendencia
+ - contenido
+ metadatos:
+  - fecha 
+  - hora 
+  - 
+
+
+
+ebfocado al usuario o tema:
+  que cada dia busque informacion de perfiles selecionades , examine y que sea una noticia 
+
+flujo 
+  - escrapeo
+
+
+delegacion
+  persona 1(sebas):
+    scrap mejorado
+    entrega a la persona 2: 
+      carpeta con archibos , cada arhibo pertenese a un tema(tendencia,usuario)
+  persona 2(prix):
+    generar texto de la noticia     
+    recibe el archibo de persona 1 , 
+    entrega a la persona 3:
+      carpeta con archibos, cada archibo tiene el texto de una noticia(.txt)
+  persona 3(leo):
+    generar pagina web de la noticia
+
+automatisacion:
+  12 pm y 12 am
+
+
+

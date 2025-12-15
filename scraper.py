@@ -6,6 +6,8 @@ import shutil  # <--- AGREGA ESTO
 from datetime import datetime
 from urllib.parse import quote
 from playwright.sync_api import sync_playwright
+import subprocess
+import sys
 
 
 # Configuración de límites
@@ -481,6 +483,23 @@ def main():
             print(f"🖼️  Total de imágenes descargadas: {total_images}")
             print(f"📁 Datos guardados en: {OUTPUT_DIR}/")
             print(f"🖼️  Imágenes guardadas en: {IMAGES_DIR}/")
+
+            # Generar noticias a partir de los tweets scrapeados
+            print("\n📝 Generando noticias a partir de los tweets...")
+            try:
+                # Llamar al script de generación de noticias
+                result = subprocess.run([sys.executable, 'noticia.py'],
+                                      capture_output=True, text=True,
+                                      env={**os.environ, 'GEMINI_API_KEY': os.environ.get('GEMINI_API_KEY', '')})
+
+                if result.returncode == 0:
+                    print("✅ Noticias generadas exitosamente.")
+                    print(result.stdout)
+                else:
+                    print("❌ Error al generar noticias:")
+                    print(result.stderr)
+            except Exception as e:
+                print(f"❌ Error al ejecutar el script de generación de noticias: {e}")
 
         except Exception as e:
             print(f"❌ Error general en el proceso: {e}")

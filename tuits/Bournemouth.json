@@ -1,0 +1,67 @@
+{
+  "trend": "Bournemouth",
+  "scraped_at": "2025-12-15T21:50:02.539377",
+  "tweet_count": 2,
+  "total_replies": 2,
+  "image_count": 2,
+  "tweets": [
+    {
+      "author": "U&I Software",
+      "handle": "",
+      "text": "BFCM Sale Alert!  The iconic MetaSynth is on sale now for Mac users. Create unheard-of soundscapes and experimental audio art. Grab 30-40% off before Tuesday!",
+      "replies": "",
+      "retweets": "1",
+      "likes": "44",
+      "timestamp": "",
+      "image_urls": [],
+      "thread_replies": [
+        {
+          "author": "Sani",
+          "handle": "",
+          "text": "We have Remontada’d bournemouth’s remontada",
+          "replies": "8",
+          "retweets": "17",
+          "likes": "38",
+          "timestamp": "2025-12-15T21:42:08.000Z",
+          "image_urls": [
+            "https://pbs.twimg.com/media/G8PaamdWEAAvteh?format=jpg&name=large"
+          ],
+          "downloaded_images": [
+            "Bournemouth/tweet_1_reply_1_img_1.jpg"
+          ]
+        }
+      ],
+      "reply_count": 1,
+      "downloaded_images": []
+    },
+    {
+      "author": "Sani",
+      "handle": "",
+      "text": "We have Remontada’d bournemouth’s remontada",
+      "replies": "8",
+      "retweets": "17",
+      "likes": "38",
+      "timestamp": "2025-12-15T21:42:08.000Z",
+      "image_urls": [
+        "https://pbs.twimg.com/media/G8PaamdWEAAvteh?format=jpg&name=large"
+      ],
+      "thread_replies": [
+        {
+          "author": "Yaw ( Menstrual Pains )",
+          "handle": "",
+          "text": "It’s just Bournemouth calm down",
+          "replies": "1",
+          "retweets": "",
+          "likes": "",
+          "timestamp": "2025-12-15T21:45:06.000Z",
+          "image_urls": [],
+          "downloaded_images": []
+        }
+      ],
+      "reply_count": 1,
+      "downloaded_images": [
+        "Bournemouth/tweet_2_img_1.jpg"
+      ]
+    }
+  ]
+}

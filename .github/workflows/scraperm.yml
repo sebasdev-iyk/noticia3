@@ -56,7 +56,7 @@ jobs:
     - name: Ejecutar scraper
       run: |
         echo "🚀 Ejecutando scraper en modo headless..."
-        python 2do_plano.py
+        python scraper.py
       env:
         DISPLAY: ":99"
         

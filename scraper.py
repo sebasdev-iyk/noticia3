@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 # Configuración de límites
 MAX_TRENDS = 2
 MAX_TWEETS = 2
-MAX_REPLIES_PER_TWEET = 5
+MAX_REPLIES_PER_TWEET = 1
 
 
 # Configuración de directorios

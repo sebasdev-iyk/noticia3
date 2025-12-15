@@ -1,61 +1,65 @@
 {
   "trend": "#OTGalaFinal",
-  "scraped_at": "2025-12-15T21:49:30.890972",
+  "scraped_at": "2025-12-15T22:08:14.300175",
   "tweet_count": 2,
   "total_replies": 2,
-  "image_count": 2,
+  "image_count": 3,
   "tweets": [
     {
-      "author": "flor ୨ৎ",
+      "author": "⌗ 𝖆𝖓𝖓𝖆 ᵖᵗ TINHO GANADOR",
       "handle": "",
-      "text": "larga vida a la relación de claudia y sergio porfavor #OTGalaFinal",
-      "replies": "",
-      "retweets": "60",
-      "likes": "867",
-      "timestamp": "2025-12-15T21:35:57.000Z",
-      "image_urls": [],
+      "text": "Después de ver la pedazo actuación de Tinho soy esto: \n#OTGalaFinal",
+      "replies": "1",
+      "retweets": "21",
+      "likes": "155",
+      "timestamp": "2025-12-15T22:05:22.000Z",
+      "image_urls": [
+        "https://pbs.twimg.com/media/G8PfvCLWsAIudI2?format=jpg&name=large"
+      ],
       "thread_replies": [
         {
-          "author": "⭑ 𝓙 ⭑",
+          "author": "⌗ 𝖆𝖓𝖓𝖆 ᵖᵗ TINHO GANADOR",
           "handle": "",
-          "text": "esto si es un HOMBRE q celebra los logros de su pareja como si fueran suyos #OTGalaFinal",
+          "text": "Por esto Tinho ganador !!",
           "replies": "",
-          "retweets": "33",
-          "likes": "621",
-          "timestamp": "2025-12-15T21:32:54.000Z",
-          "image_urls": [
-            "https://pbs.twimg.com/media/G8PYTMyWcAAs__2?format=jpg&name=large"
-          ],
-          "downloaded_images": [
-            "_OTGalaFinal/tweet_1_reply_1_img_1.jpg"
-          ]
+          "retweets": "",
+          "likes": "2",
+          "timestamp": "2025-12-15T18:23:17.000Z",
+          "image_urls": [],
+          "downloaded_images": []
         }
       ],
       "reply_count": 1,
-      "downloaded_images": []
+      "downloaded_images": [
+        "_OTGalaFinal/tweet_1_img_1.jpg"
+      ]
     },
     {
-      "author": "⭑ 𝓙 ⭑",
+      "author": "Adrián León",
       "handle": "",
-      "text": "esto si es un HOMBRE q celebra los logros de su pareja como si fueran suyos #OTGalaFinal",
+      "text": "Voy a usar mi voto extra para dárselo al padre de Cristina #OTGalaFinal",
       "replies": "",
-      "retweets": "33",
-      "likes": "621",
-      "timestamp": "2025-12-15T21:32:54.000Z",
+      "retweets": "5",
+      "likes": "81",
+      "timestamp": "2025-12-15T22:06:17.000Z",
       "image_urls": [
-        "https://pbs.twimg.com/media/G8PYTMyWcAAs__2?format=jpg&name=large"
+        "https://pbs.twimg.com/media/G8Pf8UnWkAc3V1q?format=jpg&name=large"
       ],
       "thread_replies": [
         {
-          "author": "⭑ 𝓙 ⭑",
+          "author": "⌗ 𝖆𝖓𝖓𝖆 ᵖᵗ TINHO GANADOR",
           "handle": "",
-          "text": "chenoa colando POR LA CARA el ship de guille y max #OTGalaFinal",
+          "text": "Después de ver la pedazo actuación de Tinho soy esto: \n#OTGalaFinal",
           "replies": "",
-          "retweets": "9",
-          "likes": "112",
-          "timestamp": "2025-12-15T21:23:50.000Z",
-          "image_urls": [],
-          "downloaded_images": []
+          "retweets": "21",
+          "likes": "159",
+          "timestamp": "2025-12-15T22:05:22.000Z",
+          "image_urls": [
+            "https://pbs.twimg.com/media/G8PfvCLWsAIudI2?format=jpg&name=large"
+          ],
+          "downloaded_images": [
+            "_OTGalaFinal/tweet_2_reply_1_img_1.jpg"
+          ]
         }
       ],
       "reply_count": 1,

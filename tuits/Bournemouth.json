@@ -1,33 +1,39 @@
 {
   "trend": "Bournemouth",
-  "scraped_at": "2025-12-15T21:50:02.539377",
+  "scraped_at": "2025-12-15T22:08:46.157258",
   "tweet_count": 2,
   "total_replies": 2,
-  "image_count": 2,
+  "image_count": 9,
   "tweets": [
     {
-      "author": "U&I Software",
+      "author": "Trade The Pool",
       "handle": "",
-      "text": "BFCM Sale Alert!  The iconic MetaSynth is on sale now for Mac users. Create unheard-of soundscapes and experimental audio art. Grab 30-40% off before Tuesday!",
+      "text": "Trade The Pool - Limited risk trading \n\n• Up to $200K buying power\n\n• Trade over 12,000+ Assets\n\n• Keep 70% profits\n\n• 24/7 support whenever you need it\n\nStart now!",
       "replies": "",
       "retweets": "1",
-      "likes": "44",
+      "likes": "5",
       "timestamp": "",
       "image_urls": [],
       "thread_replies": [
         {
-          "author": "Sani",
+          "author": "B/R Football",
           "handle": "",
-          "text": "We have Remontada’d bournemouth’s remontada",
-          "replies": "8",
-          "retweets": "17",
-          "likes": "38",
-          "timestamp": "2025-12-15T21:42:08.000Z",
+          "text": "13’—Man Utd 1-0 Bournemouth\n40’—Man Utd 1-1 Bournemouth\n45+4’—Man Utd 2-1 Bournemouth\n46’—Man Utd 2-2 Bournemouth\n52’—Man Utd 2-3 Bournemouth\n77’—Man Utd 3-3 Bournemouth\n79’—Man Utd 4-3 Bournemouth\n84’—Man Utd 4-4 Bournemouth\n\nTHIS. GAME",
+          "replies": "133",
+          "retweets": "477",
+          "likes": "4.1K",
+          "timestamp": "2025-12-15T21:51:13.000Z",
           "image_urls": [
-            "https://pbs.twimg.com/media/G8PaamdWEAAvteh?format=jpg&name=large"
+            "https://pbs.twimg.com/media/G8PceVlWIAA7nA-?format=jpg&name=360x360",
+            "https://pbs.twimg.com/media/G8PceUqWUAUO_4u?format=jpg&name=large",
+            "https://pbs.twimg.com/media/G8PceVcXsAQ7cYP?format=jpg&name=large",
+            "https://pbs.twimg.com/media/G8PceVhWoAEtQMF?format=jpg&name=360x360"
           ],
           "downloaded_images": [
-            "Bournemouth/tweet_1_reply_1_img_1.jpg"
+            "Bournemouth/tweet_1_reply_1_img_1.jpg",
+            "Bournemouth/tweet_1_reply_1_img_2.jpg",
+            "Bournemouth/tweet_1_reply_1_img_3.jpg",
+            "Bournemouth/tweet_1_reply_1_img_4.jpg"
           ]
         }
       ],
@@ -35,32 +41,42 @@
       "downloaded_images": []
     },
     {
-      "author": "Sani",
+      "author": "B/R Football",
       "handle": "",
-      "text": "We have Remontada’d bournemouth’s remontada",
-      "replies": "8",
-      "retweets": "17",
-      "likes": "38",
-      "timestamp": "2025-12-15T21:42:08.000Z",
+      "text": "13’—Man Utd 1-0 Bournemouth\n40’—Man Utd 1-1 Bournemouth\n45+4’—Man Utd 2-1 Bournemouth\n46’—Man Utd 2-2 Bournemouth\n52’—Man Utd 2-3 Bournemouth\n77’—Man Utd 3-3 Bournemouth\n79’—Man Utd 4-3 Bournemouth\n84’—Man Utd 4-4 Bournemouth\n\nTHIS. GAME",
+      "replies": "133",
+      "retweets": "477",
+      "likes": "4.1K",
+      "timestamp": "2025-12-15T21:51:13.000Z",
       "image_urls": [
-        "https://pbs.twimg.com/media/G8PaamdWEAAvteh?format=jpg&name=large"
+        "https://pbs.twimg.com/media/G8PceVlWIAA7nA-?format=jpg&name=360x360",
+        "https://pbs.twimg.com/media/G8PceUqWUAUO_4u?format=jpg&name=large",
+        "https://pbs.twimg.com/media/G8PceVcXsAQ7cYP?format=jpg&name=large",
+        "https://pbs.twimg.com/media/G8PceVhWoAEtQMF?format=jpg&name=360x360"
       ],
       "thread_replies": [
         {
-          "author": "Yaw ( Menstrual Pains )",
+          "author": "Busy Jude",
           "handle": "",
-          "text": "It’s just Bournemouth calm down",
-          "replies": "1",
+          "text": "",
+          "replies": "",
           "retweets": "",
-          "likes": "",
-          "timestamp": "2025-12-15T21:45:06.000Z",
-          "image_urls": [],
-          "downloaded_images": []
+          "likes": "1",
+          "timestamp": "2025-12-15T22:03:25.000Z",
+          "image_urls": [
+            "https://pbs.twimg.com/media/G8PfSFzXUAE-B-H?format=jpg&name=360x360"
+          ],
+          "downloaded_images": [
+            "Bournemouth/tweet_2_reply_1_img_1.jpg"
+          ]
         }
       ],
       "reply_count": 1,
       "downloaded_images": [
-        "Bournemouth/tweet_2_img_1.jpg"
+        "Bournemouth/tweet_2_img_1.jpg",
+        "Bournemouth/tweet_2_img_2.jpg",
+        "Bournemouth/tweet_2_img_3.jpg",
+        "Bournemouth/tweet_2_img_4.jpg"
       ]
     }
   ]

@@ -42,7 +42,7 @@ def main():
     # 1. APLICAR LA LLAVE (SEGURIDAD)
     # El script busca la llave en las variables de entorno que configuramos en el YAML.
     # No necesitas escribirla aquí, GitHub se la pasa invisiblemente.
-    api_key = AIzaSyAOFMpiQw6W9NZ8GO2W8x367ZlAMLFV4kc
+    api_key = os.getenv('GEMINI_API_KEY')
 
     if not api_key:
         print("❌ ERROR CRÍTICO: No se encontró la GEMINI_API_KEY en el entorno.")
